@@ -36,6 +36,7 @@ def normalize(name: str) -> str:
 def sort_folder(path: Path):
     for item in path.iterdir():
         if item.is_dir() and item.name not in CATEGORIES:
+            shutil.move(item, path / normalize(item.stem))
             sort_folder(item)
         else:
             file_extension = item.suffix[1:].upper() 
