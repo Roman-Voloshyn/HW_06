@@ -19,10 +19,10 @@ TRANS = {
 
 CATEGORIES = {  
                 'images': ('JPEG', 'PNG', 'JPG', 'SVG'),
-                'documents': ('DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX'),
+                'documents': ('DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX', 'RTF'),
                 'audio': ('MP3', 'OGG', 'WAV', 'AMR'),
                 'video': ('AVI', 'MP4', 'MOV', 'MKV'),
-                'archives': ('ZIP', 'GZ', 'TAR', 'RAR')
+                'archives': ('ZIP', 'GZ', 'TAR')
             }
 
 
@@ -41,12 +41,12 @@ def rename_archives(path: Path):
         else:
             file_extension = item.suffix[1:].upper() 
             file_name = normalize(item.stem) + '.' + file_extension.lower()
-            os.renames(item, path / file_name)
+            shutil.move(item, path / file_name)
 
         if item.is_dir() and not any(item.iterdir()):
             item.rmdir()
         elif item.is_dir():
-            os.renames(item, path / normalize(item.stem))
+            shutil.move(item, path / normalize(item.stem))
 
 
 def sort_folder(path: Path):
@@ -56,18 +56,18 @@ def sort_folder(path: Path):
         else:
             file_extension = item.suffix[1:].upper() 
             file_name = normalize(item.stem) + '.' + file_extension.lower()
-            if file_extension in CATEGORIES['images']:
-                os.renames(item, PATH / 'images' / file_name)
-            elif file_extension in CATEGORIES['documents']:
-                os.renames(item, PATH / 'documents' / file_name)
-            elif file_extension in CATEGORIES['audio']:
-                os.renames(item, PATH / 'audio' / file_name)
-            elif file_extension in CATEGORIES['video']:
-                os.renames(item, PATH / 'video' / file_name)
-            elif file_extension in CATEGORIES['archives']:
-                shutil.unpack_archive(item, PATH / 'archives' / item.stem)               
+            if file_extension in sum(CATEGORIES.values(), ()):
+                for category, extensions in CATEGORIES.items():
+                    if file_extension in extensions:
+                        if category == 'archives':
+                            shutil.unpack_archive(item, PATH / category / normalize(item.stem))
+                            shutil.move(item, path / file_name)
+                        else:
+                            os.renames(item, PATH / category / file_name)
+                        break
             else:
-                os.renames(item, path / file_name)
+                shutil.move(item, path / file_name)
+
     for item in PATH.iterdir():
         if item.stem == 'archives':
             rename_archives(item)
@@ -75,7 +75,7 @@ def sort_folder(path: Path):
         if item.is_dir() and not any(item.iterdir()):
             item.rmdir()
         elif item.is_dir():
-            os.renames(item, path / normalize(item.stem)) 
+            os.renames(item, path / normalize(item.stem))
 
 
 if __name__ == '__main__':
