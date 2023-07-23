@@ -48,6 +48,7 @@ def rename_archives(path: Path):
         elif item.is_dir():
             os.renames(item, path / normalize(item.stem))
 
+
 def sort_folder(path: Path):
     for item in path.iterdir():
         if item.is_dir() and item.stem not in CATEGORIES: 
@@ -64,11 +65,10 @@ def sort_folder(path: Path):
             elif file_extension in CATEGORIES['video']:
                 os.renames(item, PATH / 'video' / file_name)
             elif file_extension in CATEGORIES['archives']:
-                shutil.unpack_archive(item, PATH / 'archives' / item.stem)
-                
+                shutil.unpack_archive(item, PATH / 'archives' / item.stem)               
             else:
                 os.renames(item, path / file_name)
-    for item in (PATH).iterdir():
+    for item in PATH.iterdir():
         if item.stem == 'archives':
             rename_archives(item)
     for item in path.iterdir():
