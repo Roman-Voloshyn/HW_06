@@ -1,3 +1,4 @@
+import os
 import sys
 import shutil
 from pathlib import Path
@@ -33,37 +34,53 @@ def normalize(name: str) -> str:
     return name
 
 
+def rename_archives(path: Path):
+    for item in path.iterdir(): 
+        if item.is_dir():
+            rename_archives(item)
+        else:
+            file_extension = item.suffix[1:].upper() 
+            file_name = normalize(item.stem) + '.' + file_extension.lower()
+            os.renames(item, path / file_name)
+
+        if item.is_dir() and not any(item.iterdir()):
+            item.rmdir()
+        elif item.is_dir():
+            os.renames(item, path / normalize(item.stem))
+
 def sort_folder(path: Path):
     for item in path.iterdir():
-        if item.is_dir() and item.name not in CATEGORIES:
-            shutil.move(item, path / normalize(item.stem))
+        if item.is_dir() and item.stem not in CATEGORIES: 
             sort_folder(item)
         else:
             file_extension = item.suffix[1:].upper() 
             file_name = normalize(item.stem) + '.' + file_extension.lower()
             if file_extension in CATEGORIES['images']:
-                shutil.move(item, PATH / 'images' / file_name)
+                os.renames(item, PATH / 'images' / file_name)
             elif file_extension in CATEGORIES['documents']:
-                shutil.move(item, PATH / 'documents' / file_name)
+                os.renames(item, PATH / 'documents' / file_name)
             elif file_extension in CATEGORIES['audio']:
-                shutil.move(item, PATH / 'audio' / file_name)
+                os.renames(item, PATH / 'audio' / file_name)
             elif file_extension in CATEGORIES['video']:
-                shutil.move(item, PATH / 'video' / file_name)
+                os.renames(item, PATH / 'video' / file_name)
             elif file_extension in CATEGORIES['archives']:
                 shutil.unpack_archive(item, PATH / 'archives' / item.stem)
-                shutil.move(item, PATH / 'archives' / file_name)
+                
             else:
-                shutil.move(item, path / file_name)
+                os.renames(item, path / file_name)
+    for item in (PATH).iterdir():
+        if item.stem == 'archives':
+            rename_archives(item)
     for item in path.iterdir():
         if item.is_dir() and not any(item.iterdir()):
             item.rmdir()
+        elif item.is_dir():
+            os.renames(item, path / normalize(item.stem)) 
 
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         PATH = Path(sys.argv[1])
-        for category in CATEGORIES:
-            (PATH / category).mkdir(exist_ok=True)
         sort_folder(PATH)
         print("Folder sorted")
     else:
