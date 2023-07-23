@@ -22,7 +22,7 @@ CATEGORIES = {
                 'documents': ('DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX'),
                 'audio': ('MP3', 'OGG', 'WAV', 'AMR'),
                 'video': ('AVI', 'MP4', 'MOV', 'MKV'),
-                'archives': ('ZIP', 'GZ', 'TAR')
+                'archives': ('ZIP', 'GZ', 'TAR', 'RAR')
             }
 
 
