@@ -75,7 +75,7 @@ def sort_folder(path: Path):
         if item.is_dir() and not any(item.iterdir()):
             item.rmdir()
         elif item.is_dir():
-            os.renames(item, path / normalize(item.stem))
+            shutil.move(item, path / normalize(item.stem))
 
 
 if __name__ == '__main__':
