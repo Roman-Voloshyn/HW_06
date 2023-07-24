@@ -22,7 +22,8 @@ CATEGORIES = {
                 'documents': ('DOC', 'DOCX', 'TXT', 'PDF', 'XLSX', 'PPTX', 'RTF'),
                 'audio': ('MP3', 'OGG', 'WAV', 'AMR'),
                 'video': ('AVI', 'MP4', 'MOV', 'MKV'),
-                'archives': ('ZIP', 'GZ', 'TAR')
+                'archives': ('ZIP', 'GZ', 'TAR'),
+                'installers': ('EXE', 'MSI', 'DEB', 'RPM', 'APP', 'APK')
             }
 
 
